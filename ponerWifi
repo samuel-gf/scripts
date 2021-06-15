@@ -1,0 +1,6 @@
+#!/bin/bash
+cd /home/samuel/rtlwifi_new
+make clean
+make
+sudo make install
+sudo modprobe -v rtl8723de ant_sel=2

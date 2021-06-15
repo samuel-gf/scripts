@@ -1,0 +1,52 @@
+#!/bin/bash
+size="1280x720"
+clear
+
+# Selecciona dispositivo de vídeo
+v4l2-ctl --list-devices
+default_file_name=$(date +"%F_%H-%M-%S")
+read -p "Seleccionar número de dispositivo de grabación [0]: " n_device_video
+if [ -z "$n_device_video" ]; then n_device_video=0; fi
+echo; echo
+
+
+# Selecciona dispositivo de audio
+arecord -l
+read -p "Seleccionar número de dispositivo grabación audio [0]: " n_device_audio
+if [ -z "$n_device_audio" ]; then n_device_audio=0; fi
+echo; echo
+
+
+# Selecciona nombre del archivo de salida
+read -p "Seleccionar nombre del vídeo [$default_file_name]: " file_name
+if [ -z "$file_name" ]; then file_name=$default_file_name; fi
+
+# Configurar la cámara
+webcam_setup $n_device_video
+
+# Mostrar lo que está viendo la cámara
+ffplay -hide_banner -window_title "Preview: $file_name" \
+	-f v4l2 -video_size $size -i /dev/video$n_device_video -nostats -autoexit
+#vlc v4l2:///dev/video$n_device_video &
+
+
+# Grabar el vídeo
+webcam_setup $n_device_video 1 &	# En segundo plano y esperar un segundo para enfocar
+ffmpeg -hide_banner -y -thread_queue_size 4096 \
+	-f v4l2 -input_format mjpeg -i /dev/video$n_device_video -guess_layout_max 0 -thread_queue_size 4096 \
+	-f alsa -ac 2 -i hw:$n_device_audio,0 \
+	-c:v libx264 -vf mpdecimate -crf 26 -preset fast -ac 1 -video_size $size ~/Vídeos/mis_vídeos/$file_name.mp4
+
+
+#-c:v mjpeg -ac 1 -video_size $size ~/Vídeos/mis_vídeos/$file_name.mp4
+#-c:v libx264 -preset veryfast -ac 1 -video_size $size -threads 0 ~/Vídeos/mis_vídeos/$file_name.mp4
+
+# Redirigir el audio a los altavoces según grabo la clase
+# https://unix.stackexchange.com/questions/576785/redirecting-pulseaudio-sink-to-a-virtual-source
+# pactl load-module module-pipe-source source_name=virtualmic file=/tmp/virtualmic format=s16le rate=44100 channels=1
+# ffmpeg -re -i movie.mkv -f v4l2 /dev/video2 -f s16le -ar 44100 -ac 1 - > /tmp/virtualmic
+
+
+# Otro que parece más prometedor pero no olvides que la razón por la que no se reproduce
+# 	por los altavoces es porque el micrófono está puesto
+# https://askubuntu.com/questions/123798/how-to-hear-my-voice-in-speakers-with-a-mic

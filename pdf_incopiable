@@ -1,0 +1,7 @@
+#!/bin/bash
+file_name="$(basename $1 .pdf)"
+echo "Procesando $1"
+mkdir -p tmp
+pdftoppm $1 -jpeg -jpegopt quality=70 tmp/output
+convert tmp/output*.jpg $file_name.b.pdf
+rm -Rf tmp

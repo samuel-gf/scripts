@@ -1,0 +1,1 @@
+arp -an $1 | cut -f4 -d" "

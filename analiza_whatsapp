@@ -1,0 +1,40 @@
+#!/usr/bin/php
+<?php
+if ($argc!=2){
+	echo "Uso:\n \$php ".$argv[0]." fichero_conversacion_whatsapp.txt\n";
+	die();
+}
+$full_file_name = $argv[1];
+$file_name = pathinfo($full_file_name, PATHINFO_FILENAME);
+$file = fopen($full_file_name,'r');
+$arr = array();
+while ($l = fgets($file)){
+	if ($l[0]=='['){
+		$arr_linea = explode(']',substr($l, 1));
+		$date = explode(' ', $arr_linea[0])[0];
+		$arr_date = explode('/', $date);
+		$date = '20'.$arr_date[2].'-'.str_pad($arr_date[1], 2, '0', STR_PAD_LEFT).'-'.str_pad($arr_date[0], 2, '0', STR_PAD_LEFT);
+		array_key_exists($date, $arr)?$arr[$date]++:$arr[$date]=1;
+	}
+}
+fclose($file);
+ksort($arr);
+
+$file = fopen($file_name.'.dat', 'w');
+foreach($arr as $k => $v){
+	fwrite($file, "$k $v\n");
+}
+fclose($file);
+
+$str_gp = "set title 'Mensajes en el grupo ".ucfirst($file_name)."'\n";
+$str_gp.= "set timefmt '%Y-%m-%d'\n";
+$str_gp.= "set xdata time\n";
+$str_gp.= "set format x '%d/%m/%y'\n";
+$str_gp.= "set style line 1 lc rgb 'red'\n";
+$str_gp.= "set style fill solid\n";
+$str_gp.= "set ylabel 'Mensajes'\n";
+$str_gp.= "plot '$file_name.dat' using 1:2 title '' with boxes ls 1\n";
+file_put_contents($file_name.'.gp', $str_gp);
+
+echo "Ejecutando: \$gnuplot -p $file_name.gp\n";
+exec("gnuplot -p $file_name.gp");

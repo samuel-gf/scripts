@@ -1,0 +1,64 @@
+#!/bin/bash
+#v4l2-ctl --list-devices
+#v4l2-ctl -d$1 -l
+
+# Comprueba los parámetros
+if [ "$1" == "--help" ]
+then
+	me=$(basename "$0")
+	echo "USO: \$ $me n_device <time_to_wait>"
+	echo "  n_device: Número de dispositivo a configurar"
+	echo "  <time_to_wait>: opcional. Segundos a esperar antes de aplicar los cambios"
+	exit 0
+fi
+
+# Selecciona dispositivo de vídeo
+if [ -z "$1" ]; then
+	v4l2-ctl --list-devices
+	default_file_name=$(date +"%F_%H-%M-%S")
+	read -p "Seleccionar número de dispositivo a configurar [0]: " n_device
+	if [ -z "$n_device" ]; then n_device=0; fi
+	echo; echo
+else
+	n_device=$1
+fi
+
+time_to_wait=0
+
+if ! [ -z "$2" ]
+then
+	time_to_wait=$2
+fi
+
+sleep $time_to_wait
+v4l2-ctl -d$n_device -c white_balance_temperature_auto=0
+#v4l2-ctl -d$n_device -c white_balance_temperature=5000
+v4l2-ctl -d$n_device -c brightness=80
+v4l2-ctl -d$n_device -c contrast=80
+v4l2-ctl -d$n_device -c saturation=50
+v4l2-ctl -d$n_device -c sharpness=50
+v4l2-ctl -d$n_device -c focus_auto=0
+v4l2-ctl -d$n_device -c focus_absolute=40
+v4l2-ctl -d$n_device -c zoom_absolute=100
+sleep $time_to_wait
+
+
+
+#                     brightness : min=0 max=255 step=1 default=128 value=180
+#                       contrast : min=0 max=255 step=1 default=128 value=150
+#                     saturation : min=0 max=255 step=1 default=128 value=128
+# white_balance_temperature_auto : default=1 value=1
+#                           gain : min=0 max=255 step=1 default=0 value=39
+#           power_line_frequency : min=0 max=2 default=2 value=2
+#      white_balance_temperature : min=2000 max=6500 step=1 default=4000 value=3706 flags=inactive
+#                      sharpness : min=0 max=255 step=1 default=128 value=128
+#         backlight_compensation : min=0 max=1 step=1 default=0 value=0
+#                  exposure_auto : min=0 max=3 default=3 value=3
+#              exposure_absolute : min=3 max=2047 step=1 default=250 value=333 flags=inactive
+#         exposure_auto_priority : default=0 value=1
+#                   pan_absolute : min=-36000 max=36000 step=3600 default=0 value=0
+#                  tilt_absolute : min=-36000 max=36000 step=3600 default=0 value=0
+#                 focus_absolute : min=0 max=250 step=5 default=0 value=50 flags=inactive
+#                     focus_auto : default=1 value=1
+#                  zoom_absolute : min=100 max=500 step=1 default=100 value=100
+

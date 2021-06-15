@@ -1,0 +1,43 @@
+#!/bin/bash
+# Creado por Samuel Gómez info@samuelgomez.es el 15 marzo 2021
+pi=0
+pf=0
+output_file=""
+input_file=""
+
+# Funciones
+instrucciones_uso()
+{
+	echo "Uso:"
+	echo "$(basename $0) -pi <página_inicial> -pf <página_final> -o <output_file.pdf> input_file.pdf"
+}
+
+# Parámetros de entrada
+while [ "$1" != "" ]; do
+	case $1 in
+		-pi )	shift
+				pi=$1
+				;;
+		-pf )	shift
+				pf=$1
+				;;
+		-o )	shift
+				output_file=$1
+				;;
+		* )		input_file=$1
+	esac
+	shift
+done
+
+# Comprobar parámetros
+if [ $pi -eq 0 ] || [ $pf -eq 0  ] || [ $input_file == "" ] || [ $output_file == ""  ] ; then
+	instrucciones_uso
+	exit 1	
+fi
+
+# Ejecutar la orden
+gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -dFirstPage=$pi -dLastPage=$pf -sOutputFile=$output_file $input_file
+
+# Debug
+# echo "pi $pi pf $pf output $output_file input $input_file"
+

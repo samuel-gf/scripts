@@ -1,0 +1,5 @@
+#!/bin/bash
+#https://www.pcsuggest.com/linux-screen-recorder-ffmpeg/
+size1="1280x720"
+size2="960x720"
+ffplay -f video4linux2 -i /dev/video$1 -video_size $size1 -nostats

@@ -1,0 +1,11 @@
+#/bin/bash
+if [[ $# -eq 0 ]] ; then
+	echo "Falta parámetro. Uso:"
+	echo "$(basename $0) file_name"
+	exit 0
+fi
+
+file=$(basename $1)
+name="${file%.*}"
+echo $name
+ffmpeg -i $1 -vf "fps=25,scale=700:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" $name.gif
