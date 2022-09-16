@@ -1,0 +1,5 @@
+#!/bin/bash
+export CLASSPATH=/usr/share/java:$CLASSPATH
+#echo $1 > $HOME/test.txt
+#/usr/lib/AutoFirma $1
+sudo java -cp /usr/share/java -jar /usr/lib/AutoFirma/AutoFirma.jar $1

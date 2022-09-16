@@ -1,0 +1,4 @@
+#!/bin/bash
+# $1 Nombre del fichero a extraer
+# $2 Etiqueta HTML a extraer
+hxnormalize -ex $1 | hxselect -c $2 | tr -d "\n\t" | sed "s/  */ /g"

@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+SCRIPT_DIR=/home/samuel/Scripts
+EXCLUDE_FILE=$SCRIPT_DIR/backup_samuel_exclude.txt
+INCLUDE_FILE=$SCRIPT_DIR/backup_samuel_include.txt
+ARGS='--archive --verbose'
+
+# Primero incluir y luego excluir
+rsync $ARGS --include-from=$INCLUDE_FILE --exclude-from=$EXCLUDE_FILE /home/samuel /media/samuel/Toshiba_bak

@@ -1,0 +1,5 @@
+.*
+Descargas
+Fortran/github
+tmp
+Imágenes/*.png

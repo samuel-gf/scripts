@@ -1,0 +1,14 @@
+#!/bin/bash
+# Muestra lista de nombres de alumnos de manera aleatoria indicando primero el nombre
+# y luego el apellido. Además numera la lista y evita que el mismo alumno aparezca dos
+# veces en la lista
+FICHERO=$1
+
+# Parameters -----------------------------------------------------
+if [ -z $1 ]; then
+	echo "Herramienta que muestra una lista de alumnos en orden aleatorio"
+	echo "Uso:     $ $(basename $0) <lista.txt>"
+	exit 1
+fi
+
+cat $FICHERO | awk '{print $2, " ", $1}' | sed 's/,//g' | sed 's/  */ /g' | sort -R | cat -n

@@ -1,6 +1,7 @@
 #!/bin/bash
 #v4l2-ctl --list-devices
 #v4l2-ctl -d$1 -l
+modo=1
 
 # Comprueba los parámetros
 if [ "$1" == "--help" ]
@@ -31,15 +32,33 @@ then
 fi
 
 sleep $time_to_wait
-v4l2-ctl -d$n_device -c white_balance_temperature_auto=0
-#v4l2-ctl -d$n_device -c white_balance_temperature=5000
-v4l2-ctl -d$n_device -c brightness=80
-v4l2-ctl -d$n_device -c contrast=80
-v4l2-ctl -d$n_device -c saturation=50
-v4l2-ctl -d$n_device -c sharpness=50
-v4l2-ctl -d$n_device -c focus_auto=0
-v4l2-ctl -d$n_device -c focus_absolute=40
-v4l2-ctl -d$n_device -c zoom_absolute=100
+
+echo "Modo $modo"
+case $modo in
+	1)	# Cámara sobre la mesa
+		v4l2-ctl -d$n_device -c white_balance_temperature_auto=1
+		#v4l2-ctl -d$n_device -c white_balance_temperature=5000
+		v4l2-ctl -d$n_device -c brightness=128
+		v4l2-ctl -d$n_device -c contrast=128
+		v4l2-ctl -d$n_device -c saturation=128
+		v4l2-ctl -d$n_device -c sharpness=180
+		v4l2-ctl -d$n_device -c focus_auto=0
+		v4l2-ctl -d$n_device -c focus_absolute=40
+		v4l2-ctl -d$n_device -c zoom_absolute=100
+		;;
+	2)	# Webcam portatil vídeo-reunión
+		v4l2-ctl -d$n_device -c brightness=-10					# -64 .. 64
+		v4l2-ctl -d$n_device -c contrast=40							# 0   .. 100
+		v4l2-ctl -d$n_device -c saturation=75						# 0 ...  100
+		v4l2-ctl -d$n_device -c white_balance_temperature_auto=1
+		#v4l2-ctl -d$n_device -c white_balance_temperature=4350		# 2800 .. 6500
+		v4l2-ctl -d$n_device -c sharpness=45
+		v4l2-ctl -d$n_device -c hue=0								# -180 ... 180
+		v4l2-ctl -d$n_device -c gamma=300								# 100 ... 500
+		v4l2-ctl -d$n_device -c backlight_compensation=0
+		;;
+esac
+
 sleep $time_to_wait
 
 

@@ -1,0 +1,30 @@
+#!/bin/bash
+# Convierte un listado de ficheros en formato .heic de Apple a jpg
+# Es una herramienta creada para los exámenes online de la UNED
+
+i=1
+i_tag=$(printf "%02d\n" $i)
+this_image_has_been_converted=0
+
+for file in $(ls)
+do
+	case "$file" in
+		*.HEIC | *.heic)
+			file_without_ext=$(basename -s.HEIC $file)
+			heif-convert $file $i_tag.jpg
+			this_image_has_been_converted=1
+			;;
+		*.heic)
+			file_without_ext=$(basename -s.heic $file)
+			heif-convert $file $i_tag.jpg
+			this_image_has_been_converted=1
+			;;
+	esac
+	if [ "$this_image_has_been_converted" = 1 ]; then
+		mogrify -resize 50% $i_tag.jpg
+		let "i=i+1"
+		i_tag=$(printf "%02d\n" $i)
+	fi
+	this_image_has_been_converted=0
+done
+
